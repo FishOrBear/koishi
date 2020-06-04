@@ -224,8 +224,13 @@ export class HttpServer extends Server {
           }
         }
 
+        const safeParse = (body) => { try { return JSON.parse(body); } catch (error) { } }
         // no matched application
-        const data = JSON.parse(body)
+        const data = safeParse(body)
+        if(!data) {
+          res.statusCode = 403
+          return res.end()
+        }
         this.debug('receive %o', data)
         const meta = this.prepareMeta(data)
         if (!meta) {
